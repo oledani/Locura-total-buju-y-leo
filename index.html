@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Locura total en casa de Buju y Leo</title>
+
+<style>
+body {
+    margin: 0;
+    background: radial-gradient(circle, #001515, #000);
+    color: #00ffcc;
+    font-family: "Courier New", monospace;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    text-align: center;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0,255,204,0.06),
+        rgba(0,255,204,0.06) 1px,
+        transparent 1px,
+        transparent 4px
+    );
+    animation: scan 5s linear infinite;
+    pointer-events: none;
+}
+@keyframes scan {
+    to { transform: translateY(-50%); }
+}
+
+.box {
+    position: relative;
+    z-index: 2;
+    border: 2px solid #00ffcc;
+    padding: 35px;
+    max-width: 820px;
+    background: rgba(0,0,0,0.92);
+    box-shadow: 0 0 45px #00ffcc;
+}
+
+.hidden { display: none; }
+
+input {
+    background: black;
+    border: 1px solid #00ffcc;
+    color: #00ffcc;
+    padding: 12px;
+    width: 80%;
+}
+
+button {
+    margin-top: 20px;
+    background: transparent;
+    color: #00ffcc;
+    border: 1px solid #00ffcc;
+    padding: 12px 25px;
+    cursor: pointer;
+}
+button:hover {
+    background: #00ffcc;
+    color: #000;
+}
+
+.glitch { animation: glitch 0.6s infinite; }
+@keyframes glitch {
+    0% { transform: translate(0); }
+    25% { transform: translate(-2px, 2px); }
+    50% { transform: translate(2px, -2px); }
+    75% { transform: translate(-1px, -2px); }
+    100% { transform: translate(0); }
+}
+
+.blink { animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+.alarm {
+    color: #ff5555;
+    font-size: 22px;
+    animation: blink 0.7s infinite;
+}
+
+#clock {
+    margin-top: 15px;
+    font-size: 18px;
+}
+</style>
+</head>
+
+<body>
+
+<audio id="music" loop>
+  <source src="musica_impactante.wav" type="audio/wav">
+</audio>
+
+<div class="box" id="login">
+    <h1 class="glitch blink">CONTROL DOMÉSTICO</h1>
+    <p><strong>Locura total en casa de Buju y Leo</strong></p>
+    <p>Introduce la contraseña:</p>
+    <input type="password" id="password">
+    <br>
+    <button onclick="checkPassword()">Acceder</button>
+    <p id="error" style="color:red;"></p>
+</div>
+
+<div class="box hidden" id="countdownBox">
+    <h1 class="glitch">SINCRONIZANDO SISTEMA</h1>
+    <h2 id="countdown">5</h2>
+</div>
+
+<div class="box hidden" id="final">
+    <h1 class="blink glitch">SISTEMA ACTIVO</h1>
+    <p id="clock"></p>
+
+    <h2>LOCURA TOTAL EN CASA DE BUJU Y LEO</h2>
+
+    <p class="alarm">
+        ⚠️ EL ÚLTIMO EN LLEGAR<br>
+        LAVARÁ LOS PLATOS ⚠️
+    </p>
+
+    <p id="accessTime"></p>
+</div>
+
+<script>
+const music = document.getElementById("music");
+
+function hablar(texto){
+    const u = new SpeechSynthesisUtterance(texto);
+    u.lang = "es-ES";
+    u.rate = 0.9;
+    speechSynthesis.speak(u);
+}
+
+function subirVolumen(){
+    music.volume = 0;
+    let v = 0;
+    const i = setInterval(()=>{
+        v += 0.02;
+        music.volume = Math.min(v, 0.6);
+        if(v >= 0.6) clearInterval(i);
+    },150);
+}
+
+function checkPassword(){
+    if(document.getElementById("password").value.toLowerCase() === "locura"){
+        document.getElementById("login").classList.add("hidden");
+        document.getElementById("countdownBox").classList.remove("hidden");
+        music.play();
+        subirVolumen();
+        hablar("Sistema doméstico activado");
+        startCountdown();
+    } else {
+        document.getElementById("error").textContent =
+            "Acceso denegado. Intento registrado.";
+        hablar("Acceso denegado");
+    }
+}
+
+function startCountdown(){
+    let t = 5;
+    const c = document.getElementById("countdown");
+    const i = setInterval(()=>{
+        t--;
+        c.textContent = t;
+        if(t === 0){
+            clearInterval(i);
+            document.getElementById("countdownBox").classList.add("hidden");
+            document.getElementById("final").classList.remove("hidden");
+            registrarHora();
+            hablar("El último en llegar lavará los platos");
+            reloj();
+        }
+    },1000);
+}
+
+function registrarHora(){
+    const now = new Date();
+    document.getElementById("accessTime").textContent =
+        "Hora de acceso registrada: " + now.toLocaleTimeString();
+}
+
+function reloj(){
+    setInterval(()=>{
+        document.getElementById("clock").textContent =
+            "Hora actual: " + new Date().toLocaleTimeString();
+    },1000);
+}
+</script>
+
+</body>
+</html>
